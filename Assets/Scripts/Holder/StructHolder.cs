@@ -9,6 +9,22 @@ public struct TutorialPanels
     public GameObject panelGameObject;
 }
 
+[System.Serializable]
+public class WheelColliders
+{
+    public WheelCollider FRWheel;
+    public WheelCollider FLWheel;
+    public WheelCollider RRWheel;
+    public WheelCollider RLWheel;
+}
+[System.Serializable]
+public class WheelMeshes
+{
+    public MeshRenderer FRWheel;
+    public MeshRenderer FLWheel;
+    public MeshRenderer RRWheel;
+    public MeshRenderer RLWheel;
+}
 
 #region Incremental Idle
 [Serializable]
