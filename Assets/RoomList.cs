@@ -16,6 +16,7 @@ public class RoomList : MonoBehaviourPunCallbacks
     // Start is called before the first frame update
     IEnumerator Start()
     {
+
         if (PhotonNetwork.InRoom)
         {
             PhotonNetwork.LeaveRoom();
@@ -98,14 +99,18 @@ public class RoomList : MonoBehaviourPunCallbacks
 
     }
 
-    private void OnEnable()
+
+    public override void OnEnable()
     {
+        base.OnEnable();
         EventManager.JoinRoomButtonClicked += JoinRoomByName;
+
     }
 
-    private void OnDisable()
+    public override void OnDisable()
     {
-        EventManager.JoinRoomButtonClicked -= JoinRoomByName;
+        base.OnDisable();
+                EventManager.JoinRoomButtonClicked -= JoinRoomByName;
 
     }
 
@@ -119,6 +124,5 @@ public class RoomList : MonoBehaviourPunCallbacks
     // Update is called once per frame
     void Update()
     {
-        Debug.Log(PhotonNetwork.NetworkClientState);
     }
 }

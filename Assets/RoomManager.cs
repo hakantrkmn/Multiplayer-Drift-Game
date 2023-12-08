@@ -37,23 +37,28 @@ public class RoomManager : MonoBehaviourPunCallbacks
     }
 
 
-    private void OnEnable()
+    public override void OnEnable()
     {
+        base.OnEnable();
         EventManager.ChangeJoinRoomName += ChangeJoinRoomName;
         EventManager.JoinRoomButtonClicked += JoinRoomByName;
     }
+
+        
 
     private void ChangeJoinRoomName(string _name)
     {
         roomNameToJoin = _name;
     }
 
-    private void OnDisable()
+    public override void OnDisable()
     {
-                EventManager.ChangeJoinRoomName -= ChangeJoinRoomName;
+        base.OnDisable();
+               EventManager.ChangeJoinRoomName -= ChangeJoinRoomName;
         EventManager.JoinRoomButtonClicked -= JoinRoomByName;
-
     }
+         
+
 
     public void JoinRoomByName(string _name)
     {
