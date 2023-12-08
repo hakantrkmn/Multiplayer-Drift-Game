@@ -18,7 +18,9 @@ public static class EventManager
 
   
 
- 
+     public static Action<string> JoinRoomButtonClicked;
+     public static Action<string> ChangeJoinRoomName;
+
 
 
 }

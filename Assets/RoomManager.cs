@@ -4,6 +4,8 @@ using UnityEngine;
 using Photon.Pun;
 using Unity.Mathematics;
 using Photon.Pun.UtilityScripts;
+using System;
+using Sirenix.OdinInspector;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -17,7 +19,10 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
     string nickname = "unnamed";
 
+    public string roomNameToJoin = "test";
     public GameObject nameUI;
+
+    public CanvasGroup roomManagerCanvas;
 
     public GameObject connectingUI;
 
@@ -31,6 +36,32 @@ public class RoomManager : MonoBehaviourPunCallbacks
         instance = this;
     }
 
+
+    private void OnEnable()
+    {
+        EventManager.ChangeJoinRoomName += ChangeJoinRoomName;
+        EventManager.JoinRoomButtonClicked += JoinRoomByName;
+    }
+
+    private void ChangeJoinRoomName(string _name)
+    {
+        roomNameToJoin = _name;
+    }
+
+    private void OnDisable()
+    {
+                EventManager.ChangeJoinRoomName -= ChangeJoinRoomName;
+        EventManager.JoinRoomButtonClicked -= JoinRoomByName;
+
+    }
+
+    public void JoinRoomByName(string _name)
+    {
+            roomNameToJoin = _name;
+            roomManagerCanvas.alpha=1;
+            roomManagerCanvas.blocksRaycasts=true;
+            roomManagerCanvas.interactable=true;
+    }
     public void ChangeNickName(string _name)
     {
         nickname = _name;
@@ -40,36 +71,12 @@ public class RoomManager : MonoBehaviourPunCallbacks
     {
         Debug.Log("Connecting...");
 
-        PhotonNetwork.ConnectUsingSettings();
+        PhotonNetwork.JoinOrCreateRoom(roomNameToJoin, null, null);
 
         nameUI.SetActive(false);
         connectingUI.SetActive(true);
     }
-    void Start()
-    {
-
-    }
-
-
-    public override void OnConnectedToMaster()
-    {
-        base.OnConnectedToMaster();
-
-        Debug.Log("Connected to Server");
-
-        PhotonNetwork.JoinLobby();
-
-    }
-
-
-    public override void OnJoinedLobby()
-    {
-        base.OnJoinedLobby();
-
-        PhotonNetwork.JoinOrCreateRoom("test", null, null);
-
-
-    }
+  
 
     public override void OnJoinedRoom()
     {
