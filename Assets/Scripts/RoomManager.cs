@@ -6,6 +6,9 @@ using Unity.Mathematics;
 using Photon.Pun.UtilityScripts;
 using System;
 using Sirenix.OdinInspector;
+using System.Linq;
+using Unity.VisualScripting;
+using System.Threading.Tasks;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
@@ -106,16 +109,44 @@ public class RoomManager : MonoBehaviourPunCallbacks
     }
 
 
+    public override void OnPlayerEnteredRoom(Photon.Realtime.Player newPlayer)
+    {
+        base.OnPlayerEnteredRoom(newPlayer);
+        SetLocalOnlinePlayers();
+        
+    }
+
     public void SpawnPlayer()
     {
-        GameObject _player = PhotonNetwork.Instantiate(player.name, Vector3.zero, quaternion.identity);
 
-        _player.GetComponent<PlayerSetup>().isLocalPlayer();
-        _player.GetComponent<Health>().isLocalPlayer = true;
+         GameObject _player = PhotonNetwork.Instantiate(player.name, Vector3.zero, quaternion.identity);
+     //   _player.AddComponent<Player>();
+        _player.GetComponent<Player>().isLocalPlayer=true;
+        _player.GetComponent<Player>().SetUpCar();
+
+        SetLocalOnlinePlayers();
 
         _player.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
+        
         PhotonNetwork.LocalPlayer.NickName = nickname;
 
         EventManager.SetGameCamera(_player.transform);
+
+        
+    }
+
+
+    public  void SetLocalOnlinePlayers()
+    { 
+        var players = FindObjectsOfType<Health>();
+
+        foreach (var item in players)
+        {
+            if(!item.GetComponent<Player>().isLocalPlayer )
+            {
+                item.GetComponent<Player>().SetUpCar();
+               // item.AddComponent<Player>();
+            }
+        }
     }
 }

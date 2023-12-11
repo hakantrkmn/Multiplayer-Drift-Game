@@ -12,6 +12,8 @@ public class LeaderBoard : MonoBehaviour
 
 public Transform content;
 
+public  CanvasGroup board;
+
     public List<ScorePanel> scorePanels;
     // Start is called before the first frame update
     void Start()
@@ -42,6 +44,6 @@ public Transform content;
    /// </summary>
    void Update()
    {
-       content.gameObject.SetActive(Input.GetKey(KeyCode.Tab));
+       Utility.OpenCloseCanvasGroup(board,Input.GetKey(KeyCode.Tab));
    }
 }

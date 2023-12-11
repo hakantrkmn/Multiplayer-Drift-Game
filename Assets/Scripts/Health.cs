@@ -9,7 +9,16 @@ public class Health : MonoBehaviour
     public int health;
     public Image healthBar;
 
-    public bool isLocalPlayer;
+    bool isLocalPlayer;
+
+
+
+
+    void Start()
+    {
+               isLocalPlayer= GetComponentInParent<Player>().isLocalPlayer;
+
+    }
 
 
 [PunRPC]

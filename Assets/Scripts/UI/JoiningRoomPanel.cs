@@ -19,7 +19,7 @@ public class JoiningRoomPanel : MonoBehaviour
     private void OnDisable()
     {
         EventManager.OpenCreateRoomPanel -= OpenCreateRoomPanel;
-        EventManager.OpenCreateRoomPanel -= OpenCreateRoomPanel;
+        EventManager.JoinRoomButtonClicked -= OpenConnectingScreen;
 
     }
 

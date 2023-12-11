@@ -18,5 +18,6 @@ public class RoomUIItem : MonoBehaviour
    public void OnButtonPressed()
    {
         EventManager.ChangeCurrentRoomName(roomNameText.text);
+        EventManager.OpenCreateRoomPanel();
    }
 }
