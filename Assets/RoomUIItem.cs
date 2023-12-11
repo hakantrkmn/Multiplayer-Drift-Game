@@ -17,6 +17,6 @@ public class RoomUIItem : MonoBehaviour
 
    public void OnButtonPressed()
    {
-        EventManager.JoinRoomButtonClicked(roomNameText.text);
+        EventManager.ChangeCurrentRoomName(roomNameText.text);
    }
 }

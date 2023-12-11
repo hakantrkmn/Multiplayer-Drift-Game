@@ -9,44 +9,56 @@ using Sirenix.OdinInspector;
 
 public class RoomManager : MonoBehaviourPunCallbacks
 {
-    public static RoomManager instance;
 
 
     public GameObject player;
 
 
-    public GameObject roomCam;
 
     string nickname = "unnamed";
 
     public string roomNameToJoin = "test";
-    public GameObject nameUI;
 
-    public CanvasGroup roomManagerCanvas;
 
-    public GameObject connectingUI;
-
-    /// <summary>
-    /// Start is called on the frame when a script is enabled just before
-    /// any of the Update methods is called the first time.
-    /// </summary>
-
-    private void Awake()
+    IEnumerator Start()
     {
-        instance = this;
+
+        if (PhotonNetwork.InRoom)
+        {
+            PhotonNetwork.LeaveRoom();
+            PhotonNetwork.Disconnect();
+        }
+
+        yield return new WaitUntil(() => !PhotonNetwork.IsConnected);
+
+        Debug.Log("mastera bağlanıyo");
+
+        PhotonNetwork.ConnectUsingSettings();
     }
+
+    public override void OnConnectedToMaster()
+    {
+        base.OnConnectedToMaster();
+
+        Debug.Log("mastera bağlandı");
+        PhotonNetwork.JoinLobby();
+    }
+
+
 
 
     public override void OnEnable()
     {
         base.OnEnable();
-        EventManager.ChangeJoinRoomName += ChangeJoinRoomName;
-        EventManager.JoinRoomButtonClicked += JoinRoomByName;
+        EventManager.ChangeNickName += ChangeNickName;
+        EventManager.JoinRoomButtonClicked += JoinRoomButtonClicked;
+        EventManager.ChangeCurrentRoomName += ChangeCurrentRoomName;
+        EventManager.PlayerIsDead += SpawnPlayer;
     }
 
-        
 
-    private void ChangeJoinRoomName(string _name)
+
+    private void ChangeCurrentRoomName(string _name)
     {
         roomNameToJoin = _name;
     }
@@ -54,19 +66,20 @@ public class RoomManager : MonoBehaviourPunCallbacks
     public override void OnDisable()
     {
         base.OnDisable();
-               EventManager.ChangeJoinRoomName -= ChangeJoinRoomName;
-        EventManager.JoinRoomButtonClicked -= JoinRoomByName;
+        EventManager.ChangeNickName -= ChangeNickName;
+        EventManager.JoinRoomButtonClicked -= JoinRoomButtonClicked;
+        EventManager.ChangeCurrentRoomName -= ChangeCurrentRoomName;
+        EventManager.PlayerIsDead -= SpawnPlayer;
     }
-         
 
-
-    public void JoinRoomByName(string _name)
+    private void JoinRoomButtonClicked()
     {
-            roomNameToJoin = _name;
-            roomManagerCanvas.alpha=1;
-            roomManagerCanvas.blocksRaycasts=true;
-            roomManagerCanvas.interactable=true;
+        PhotonNetwork.JoinOrCreateRoom(roomNameToJoin, null, null);
+        EventManager.GameStarted();
+
     }
+
+
     public void ChangeNickName(string _name)
     {
         nickname = _name;
@@ -78,18 +91,16 @@ public class RoomManager : MonoBehaviourPunCallbacks
 
         PhotonNetwork.JoinOrCreateRoom(roomNameToJoin, null, null);
 
-        nameUI.SetActive(false);
-        connectingUI.SetActive(true);
     }
-  
+
 
     public override void OnJoinedRoom()
     {
         base.OnJoinedRoom();
 
         Debug.Log("we are connected and in a room");
+        EventManager.GameStarted();
 
-        roomCam.SetActive(false);
         SpawnPlayer();
 
     }
@@ -105,6 +116,6 @@ public class RoomManager : MonoBehaviourPunCallbacks
         _player.GetComponent<PhotonView>().RPC("SetNickName", RpcTarget.AllBuffered, nickname);
         PhotonNetwork.LocalPlayer.NickName = nickname;
 
-
+        EventManager.SetGameCamera(_player.transform);
     }
 }

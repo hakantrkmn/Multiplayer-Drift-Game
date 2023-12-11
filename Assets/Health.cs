@@ -22,7 +22,7 @@ public class Health : MonoBehaviour
         {
             if (isLocalPlayer)
             {
-            RoomManager.instance.SpawnPlayer();
+                EventManager.PlayerIsDead();
                 
             }
             Destroy(gameObject);

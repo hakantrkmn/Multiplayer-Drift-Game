@@ -10,45 +10,18 @@ public class RoomList : MonoBehaviourPunCallbacks
 
     public GameObject roomUIItemPrefab;
 
-    public CanvasGroup roomListCanvas;
     public Transform roomListParent;
     List<RoomInfo> cachedRoomList = new List<RoomInfo>();
     // Start is called before the first frame update
-    IEnumerator Start()
-    {
 
-        if (PhotonNetwork.InRoom)
-        {
-            PhotonNetwork.LeaveRoom();
-            PhotonNetwork.Disconnect();
-        }
-
-        yield return new WaitUntil(() => !PhotonNetwork.IsConnected);
-
-        Debug.Log("mastera bağlanıyo");
-
-        PhotonNetwork.ConnectUsingSettings();
-    }
-
-
-  public override void OnDisconnected(DisconnectCause cause)
-    {
-        Debug.LogError("Bağlantı Kesildi! Sebep: " + cause);
-    }
 
 
     public void ChangeRoomToCreateName(string _name)
     {
-        EventManager.ChangeJoinRoomName(_name);
+        EventManager.ChangeCurrentRoomName(_name);
     }
 
-    public override void OnConnectedToMaster()
-    {
-        base.OnConnectedToMaster();
 
-        Debug.Log("mastera bağlandı");
-        PhotonNetwork.JoinLobby();
-    }
 
 
     public override void OnRoomListUpdate(List<RoomInfo> roomList)
@@ -100,29 +73,5 @@ public class RoomList : MonoBehaviourPunCallbacks
     }
 
 
-    public override void OnEnable()
-    {
-        base.OnEnable();
-        EventManager.JoinRoomButtonClicked += JoinRoomByName;
 
-    }
-
-    public override void OnDisable()
-    {
-        base.OnDisable();
-                EventManager.JoinRoomButtonClicked -= JoinRoomByName;
-
-    }
-
-    public void JoinRoomByName(string _name)
-    {
-        roomListCanvas.alpha = 0;
-        roomListCanvas.blocksRaycasts = false;
-        roomListCanvas.interactable = false;
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-    }
 }
