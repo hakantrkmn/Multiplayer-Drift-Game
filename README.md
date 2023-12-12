@@ -1,6 +1,3 @@
-# Unity Game Template
- unity oyun için kullandığım template. hazır patternler ve başlangıç sürecini hızlandıracak şekilde hazırladım.
- 
- içindeki assetler
- - Odin
- - Dotween
+# MULTIPLAYER DRIFT GAME
+
+ photon ile yaptığım basit multiplayer oyun. içinde oda oluşturma,oluşturulan odaya bağlanma,nick seçme gibi basit şeyler bulunuyor. odaya bağlandıktan sonra her oyuncuya bir arba veriliyor. araba sürme ve ateş etme mekanikleriyle oynanıyor. can barı sıfırlanırsa tekrar spawn oluyor. oyunu yavaş yavaş geliştireceğim. portfolyom için sürekli geliştireceğim bir oyun olacak.
