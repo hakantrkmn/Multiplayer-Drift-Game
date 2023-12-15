@@ -6,113 +6,94 @@ using UnityEngine;
 public abstract class Car : MonoBehaviour
 {
     public Rigidbody carRB;
-    public WheelMeshes wheelMeshes;
-    public WheelColliders wheelColliders;
-    public float gasInput;
-    public float brakeInput;
-    public float steeringInput;
 
-    public float motorPower;
+    public float moveInput;
 
-    public float speed;
+    public List<Wheel> wheels;
+    public float maxAcceleration = 30.0f;
+    public float brakeAcceleration = 50.0f;
 
-    public AnimationCurve steeringCurve;
+    public float turnSensivity = 1.0f;
+    public float maxSteerAngle = 30f;
 
-    public float brakePower;
 
-    public float slipAngle;
+    Vector3 _centerOfMass;
 
-    public float movingDirection;
+    float steerInput;
 
     void Start()
     {
         carRB = GetComponent<Rigidbody>();
     }
 
-    void Update()
-    {
-        speed = carRB.velocity.magnitude;
-        CheckInputs();
-        ApplyMotor();
-        ApplySteering();
-        ApplyBreake();
-        UpdateWheels();
+    private void Update() {
+        GetInputs();
+        AnimateWheels();
     }
 
-    void ApplyMotor()
-    {
-        wheelColliders.RRWheel.motorTorque = motorPower * gasInput;
-        wheelColliders.RLWheel.motorTorque = motorPower * gasInput;
+
+    private void LateUpdate() {
+        Move();
+        Steer();
+        Brake();
     }
 
-    void CheckInputs()
+    void GetInputs()
     {
-        gasInput = Input.GetAxis("Vertical");
+        moveInput = Input.GetAxis("Vertical");
+        steerInput = Input.GetAxis("Horizontal");
 
-        steeringInput = Input.GetAxis("Horizontal");
+    }
 
-        slipAngle = Vector3.Angle(transform.forward, carRB.velocity - transform.forward);
-        movingDirection = Vector3.Dot(transform.forward, carRB.velocity);
-        if (slipAngle < 120f)
+
+    void Move()
+    {
+        foreach (var wheel in wheels)
         {
-            if (movingDirection < -0.5f && gasInput > 0)
-            {
-                brakeInput = Mathf.Abs(gasInput);
-            }
-            else if (movingDirection > 0.5f && gasInput < 0)
-            {
-                brakeInput = Mathf.Abs(gasInput);
-            }
-            else
-            {
-                brakeInput = 0;
-            }
+            wheel.collider.motorTorque = moveInput * maxAcceleration * 1500 * Time.deltaTime;
+        }
+    }
 
+    void Brake()
+    {
+        if (Input.GetKey(KeyCode.Space))
+        {
+            foreach (var wheel in wheels)
+            {
+                wheel.collider.brakeTorque = brakeAcceleration*700*Time.deltaTime;
+            }
         }
         else
         {
-            brakeInput = 0;
+            foreach (var wheel in wheels)
+            {
+                wheel.collider.brakeTorque = 0;
+            }
         }
-
     }
 
-    void ApplySteering()
+    void Steer()
     {
-        float steeringAngle = steeringInput * steeringCurve.Evaluate(speed);
-        if (movingDirection > .5f)
+        foreach (var wheel in wheels)
         {
-            steeringAngle += Vector3.Angle(transform.forward, carRB.velocity + transform.forward);
-            steeringAngle = Mathf.Clamp(steeringAngle, -90, 90);
+            if (wheel.axel == Axel.Front)
+            {
+                var steerAngle = steerInput * turnSensivity * maxSteerAngle;
+                wheel.collider.steerAngle = Mathf.Lerp(wheel.collider.steerAngle,steerAngle,.6f);
+            }
         }
-
-        wheelColliders.FRWheel.steerAngle = steeringAngle;
-        wheelColliders.FLWheel.steerAngle = steeringAngle;
     }
 
-    void ApplyBreake()
+    void AnimateWheels()
     {
-        wheelColliders.FRWheel.brakeTorque = brakeInput * brakePower * .7f;
-        wheelColliders.FLWheel.brakeTorque = brakeInput * brakePower * .7f;
-        wheelColliders.RRWheel.brakeTorque = brakeInput * brakePower * .3f;
-        wheelColliders.RLWheel.brakeTorque = brakeInput * brakePower * .3f;
+        foreach (var wheel in wheels)
+        {
+            Quaternion rot;
+            Vector3 pos;
+            wheel.collider.GetWorldPose(out pos,out rot);
 
-    }
-
-    void UpdateWheels()
-    {
-        UpdateWheel(wheelColliders.FLWheel, wheelMeshes.FLWheel);
-        UpdateWheel(wheelColliders.RLWheel, wheelMeshes.RLWheel);
-        UpdateWheel(wheelColliders.RRWheel, wheelMeshes.RRWheel);
-        UpdateWheel(wheelColliders.FRWheel, wheelMeshes.FRWheel);
-
-    }
-
-    void UpdateWheel(WheelCollider coll, MeshRenderer wheelMesh)
-    {
-        Quaternion quat;
-        Vector3 position;
-        coll.GetWorldPose(out position, out quat);
-        wheelMesh.transform.position = position;
-        wheelMesh.transform.rotation = quat;
+            wheel.wheelModel.transform.position = pos;
+            wheel.wheelModel.transform.rotation = rot;
+        }
     }
 }

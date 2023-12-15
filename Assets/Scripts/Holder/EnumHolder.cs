@@ -6,7 +6,11 @@
     PauseLevel,
     ResetProgressData,
 }
-
+public enum Axel
+{
+    Front,
+    Rear,
+}
 public enum InGamePanelTypes
 {
     OnlyLevel,

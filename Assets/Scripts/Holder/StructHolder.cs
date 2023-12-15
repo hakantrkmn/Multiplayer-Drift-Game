@@ -8,7 +8,13 @@ public struct TutorialPanels
     public TutorialTypes panelName;
     public GameObject panelGameObject;
 }
-
+[System.Serializable]
+public class Wheel
+{
+    public  GameObject wheelModel;
+    public WheelCollider collider;
+    public Axel axel;
+}
 [System.Serializable]
 public class WheelColliders
 {
